@@ -46,33 +46,41 @@ const listProxy = [
 ];
 let proxyIP;
 export default {
-    async fetch(request, ctx) {
-      try {
-        proxyIP = proxyIP;
-        const url = new URL(request.url);
-        const upgradeHeader = request.headers.get('Upgrade');
-	if (!upgradeHeader && !url.pathname.endsWith("/tandes")) {
-	    return Response.redirect("https://google.com", 302);
-	}
-        for (const entry of listProxy) {
-          if (url.pathname === entry.path) {
-            proxyIP = entry.proxy;
-            break;
-          }
-        }
-        if (upgradeHeader === 'websocket' && proxyIP) {
-          return await vlessOverWSHandler(request);
-        }
-        const allConfig = await getAllConfigVless(request.headers.get('Host'));
-        return new Response(allConfig, {
-          status: 200,
-          headers: { "Content-Type": "text/html;charset=utf-8" },
-        });
-      } catch (err) {
-        return new Response(err.toString(), { status: 500 });
+  async fetch(request, env, ctx) {
+    try {
+      // Mengambil UUID menggunakan generateUUIDv4 dan environment
+      const uuid = generateUUIDv4(env);
+      console.log("UUID yang diambil: ", uuid);
+
+      proxyIP = proxyIP;
+      const url = new URL(request.url);
+      const upgradeHeader = request.headers.get('Upgrade');
+      
+      if (!upgradeHeader && !url.pathname.endsWith("/tandes")) {
+        return Response.redirect("https://google.com", 302);
       }
-    },
-  };
+
+      for (const entry of listProxy) {
+        if (url.pathname === entry.path) {
+          proxyIP = entry.proxy;
+          break;
+        }
+      }
+
+      if (upgradeHeader === 'websocket' && proxyIP) {
+        return await vlessOverWSHandler(request);
+      }
+
+      const allConfig = await getAllConfigVless(request.headers.get('Host'));
+      return new Response(allConfig, {
+        status: 200,
+        headers: { "Content-Type": "text/html;charset=utf-8" },
+      });
+    } catch (err) {
+      return new Response(err.toString(), { status: 500 });
+    }
+  },
+};
 async function getAllConfigVless(hostName) {
     try {
         let vlessConfigs = '';
@@ -525,8 +533,8 @@ function generateUUIDv4() {
     randomValues[15].toString(16).padStart(2, '0')
 ].join('').replace(/^(.{8})(.{4})(.{4})(.{4})(.{12})$/, '$1-$2-$3-$4-$5');
 }*/
-function generateUUIDv4() {
-  return 'b90f26f0-834b-41a6-b06c-d173986b3361'; // UUID paten yang diinginkan
+function generateUUIDv4(env) {
+  return env.uuid || 'b90f26f0-834b-41a6-b06c-d173986b3361'; // UUID default
 }
 async function vlessOverWSHandler(request) {
 	const webSocketPair = new WebSocketPair();
