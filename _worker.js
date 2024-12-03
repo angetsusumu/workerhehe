@@ -46,7 +46,6 @@ const listProxy = [
 ];
 let proxyIP;
 function generateUUIDv4(env) {
-function generateUUIDv4(env) {
   // Periksa apakah env.uuid ada, jika tidak gunakan UUID default
   return env.uuid || 'b90f26f0-834b-41a6-b06c-d173986b3361'; // UUID default
 }
