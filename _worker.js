@@ -46,7 +46,7 @@ const listProxy = [
 ];
 let proxyIP;
 function generateUUIDv4() {
-  return 'yangjual-akun-inii-kang-rippertipuya'; // UUID paten yang diinginkan
+  return '519BA4E9-DF4F-437F-B5AA-496299333503'; // UUID paten yang diinginkan
 }
 export default {
     async fetch(request, ctx) {
