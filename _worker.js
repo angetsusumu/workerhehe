@@ -674,27 +674,34 @@ function makeReadableWebSocketStream(webSocketServer, earlyDataHeader, log) {
 	});
 	return stream;
 }
-function processVlessHeader(
-	vlessBuffer
-) {
-	if (vlessBuffer.byteLength < 24) {
-		return {
-			hasError: true,
-			message: 'invalid data',
-		};
-	}
-	// Ambil UUID pengguna dari vlessBuffer (byte 1-16)
-    const uuidBuffer = vlessBuffer.slice(1, 17); // UUID pengguna diasumsikan berada di byte 1-16
-    const userUUID = Array.from(new Uint8Array(uuidBuffer))
-        .map((byte) => byte.toString(16).padStart(2, '0'))
-        .join('-');
+function processVlessHeader(vlessBuffer) {
+    if (vlessBuffer.byteLength < 24) {
+        return {
+            hasError: true,
+            message: 'invalid data',
+        };
+    }
 
-    // Cek kecocokan UUID pengguna dengan UUID dari generateUUIDv4
-    const validUUID = generateUUIDv4(); // Ambil UUID yang sudah ditentukan
+    // Ambil UUID pengguna dari vlessBuffer (byte 1-16)
+    const uuidBuffer = vlessBuffer.slice(1, 17); // UUID pengguna diasumsikan ada di byte 1-16
+    const userUUID = [...new Uint8Array(uuidBuffer)]
+        .map((byte, index) => {
+            const hex = byte.toString(16).padStart(2, '0');
+            if (index === 3 || index === 5 || index === 7 || index === 9) {
+                return `${hex}-`;
+            }
+            return hex;
+        })
+        .join('');
+
+    // Ambil UUID tetap dari generateUUIDv4
+    const validUUID = generateUUIDv4();
+
+    // Cocokkan UUID pengguna dengan UUID tetap
     if (userUUID !== validUUID) {
         return {
             hasError: true,
-            message: 'UUID tidak valid, akses ditolak',
+            message: `UUID tidak valid: ${userUUID}`,
         };
     }
 
