@@ -44,7 +44,7 @@ const listProxy = [
     { path: '/us', proxy: '34.83.245.149' },
     { path: '/vn', proxy: '103.82.26.183' }
 ];
-let proxyIP;
+let proxyIP; // definisi 
 let userID = "3c426ba6-1c10-4d9c-b8a5-39e0b4d9cf86";
 
 export default {
