@@ -90,8 +90,8 @@ async function getAllConfigVless(hostName) {
             }
 	    const flagEmoji = countryCodeToFlagEmoji(data.countryCode);
             const pathFixed = encodeURIComponent(path);
-            const vlessTls = `vless://${generateUUIDv4()}\u0040${bugku}:443?encryption=none&security=tls&sni=${hostName}&type=ws&host=${hostName}&path=${pathFixed}#${data.isp}, ${data.country} ${flagEmoji}`;
-            const vlessNtls = `vless://${generateUUIDv4()}\u0040${bugku}80?path=${pathFixed}&security=none&encryption=none&host=${hostName}&type=ws&sni=${hostName}#${data.isp}, ${data.country} ${flagEmoji}`;
+            const vlessTls = `vless://${userID}\u0040${bugku}:443?encryption=none&security=tls&sni=${hostName}&type=ws&host=${hostName}&path=${pathFixed}#${data.isp}, ${data.country} ${flagEmoji}`;
+            const vlessNtls = `vless://${userID}\u0040${bugku}80?path=${pathFixed}&security=none&encryption=none&host=${hostName}&type=ws&sni=${hostName}#${data.isp}, ${data.country} ${flagEmoji}`;
             const vlessTlsFixed = vlessTls.replace(/ /g, '%20');
             const vlessNtlsFixed = vlessNtls.replace(/ /g, '%20');
             const clashConfTls = 
@@ -99,7 +99,7 @@ async function getAllConfigVless(hostName) {
   server: ${bugku}
   port: 443
   type: vless
-  uuid: ${generateUUIDv4()}
+  uuid: ${userID}
   cipher: auto
   tls: true
   skip-cert-verify: true
@@ -115,7 +115,7 @@ async function getAllConfigVless(hostName) {
   server: ${bugku}
   port: 80
   type: vless
-  uuid: ${generateUUIDv4()}
+  uuid: ${userID}
   cipher: auto
   tls: false
   skip-cert-verify: true
