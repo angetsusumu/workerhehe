@@ -46,17 +46,18 @@ const listProxy = [
 ];
 let proxyIP; // definisi 
 let userID = "3c426ba6-1c10-4d9c-b8a5-39e0b4d9cf86";
-
+let kodeUnik = "kodeUnik";
 export default {
     async fetch(request, env, ctx) {
       try {
         proxyIP = proxyIP;
         userID = env.uuid || userID;
+        kodeUnik = env.kode || kodeUnik;
         const url = new URL(request.url);
         const upgradeHeader = request.headers.get('Upgrade');
-	if (!upgradeHeader && !url.pathname.endsWith("/tandes")) {
-	    return Response.redirect("https://google.com", 302);
-	}
+    	if (!upgradeHeader && !url.pathname.endsWith(`/${kodeUnik}`)) {
+          return Response.redirect("https://google.com", 302);
+        }
         for (const entry of listProxy) {
           if (url.pathname === entry.path) {
             proxyIP = entry.proxy;
