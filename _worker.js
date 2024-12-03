@@ -45,13 +45,13 @@ const listProxy = [
     { path: '/vn', proxy: '103.82.26.183' }
 ];
 let proxyIP;
-function generateUUIDv4() {
-  return '3265e475-53b8-41ff-abde-ceea99dc3088'; // UUID paten yang diinginkan
-}
+let userID = "3c426ba6-1c10-4d9c-b8a5-39e0b4d9cf86";
+
 export default {
-    async fetch(request, ctx) {
+    async fetch(request, env, ctx) {
       try {
         proxyIP = proxyIP;
+        userID = env.uuid || userID;
         const url = new URL(request.url);
         const upgradeHeader = request.headers.get('Upgrade');
 	if (!upgradeHeader && !url.pathname.endsWith("/tandes")) {
@@ -91,8 +91,8 @@ async function getAllConfigVless(hostName) {
             }
 	    const flagEmoji = countryCodeToFlagEmoji(data.countryCode);
             const pathFixed = encodeURIComponent(path);
-            const vlessTls = `vless://${generateUUIDv4()}\u0040${bugku}:443?encryption=none&security=tls&sni=${hostName}&type=ws&host=${hostName}&path=${pathFixed}#${data.isp}, ${data.country} ${flagEmoji}`;
-            const vlessNtls = `vless://${generateUUIDv4()}\u0040${bugku}80?path=${pathFixed}&security=none&encryption=none&host=${hostName}&type=ws&sni=${hostName}#${data.isp}, ${data.country} ${flagEmoji}`;
+            const vlessTls = `vless://${userID}\u0040${bugku}:443?encryption=none&security=tls&sni=${hostName}&type=ws&host=${hostName}&path=${pathFixed}#${data.isp}, ${data.country} ${flagEmoji}`;
+            const vlessNtls = `vless://${userID}\u0040${bugku}80?path=${pathFixed}&security=none&encryption=none&host=${hostName}&type=ws&sni=${hostName}#${data.isp}, ${data.country} ${flagEmoji}`;
             const vlessTlsFixed = vlessTls.replace(/ /g, '%20');
             const vlessNtlsFixed = vlessNtls.replace(/ /g, '%20');
             const clashConfTls = 
@@ -100,7 +100,7 @@ async function getAllConfigVless(hostName) {
   server: ${bugku}
   port: 443
   type: vless
-  uuid: ${generateUUIDv4()}
+  uuid: ${userID}
   cipher: auto
   tls: true
   skip-cert-verify: true
@@ -116,7 +116,7 @@ async function getAllConfigVless(hostName) {
   server: ${bugku}
   port: 80
   type: vless
-  uuid: ${generateUUIDv4()}
+  uuid: ${userID}
   cipher: auto
   tls: false
   skip-cert-verify: true
@@ -505,7 +505,7 @@ vlessConfigs += `
     }
 }
 /*
-function generateUUIDv4() {
+function userID {
   const randomValues = crypto.getRandomValues(new Uint8Array(16));
   randomValues[6] = (randomValues[6] & 0x0f) | 0x40;
   randomValues[8] = (randomValues[8] & 0x3f) | 0x80;
@@ -696,7 +696,7 @@ function processVlessHeader(vlessBuffer) {
         .join('');
 
     // Ambil UUID tetap dari generateUUIDv4
-    const validUUID = generateUUIDv4();
+    const validUUID = userID;
 
     // Cocokkan UUID pengguna dengan UUID tetap
     if (userUUID !== validUUID) {
