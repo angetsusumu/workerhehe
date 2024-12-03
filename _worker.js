@@ -674,7 +674,7 @@ function makeReadableWebSocketStream(webSocketServer, earlyDataHeader, log) {
 	});
 	return stream;
 }
-function processVlessHeader(
+async function processVlessHeader(
 	vlessBuffer
 ) {
 	if (vlessBuffer.byteLength < 24) {
