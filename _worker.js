@@ -45,47 +45,37 @@ const listProxy = [
     { path: '/vn', proxy: '103.82.26.183' }
 ];
 let proxyIP;
-function generateUUIDv4(env) {
-  // Periksa apakah env.uuid ada, jika tidak gunakan UUID default
-  return env.uuid || 'b90f26f0-834b-41a6-b06c-d173986b3361'; // UUID default
+function generateUUIDv4() {
+  return 'b90f26f0-834b-41a6-b06c-d173986b3361'; // UUID paten yang diinginkan
 }
-
 export default {
-  async fetch(request, env, ctx) {
-    try {
-      // Mengambil UUID menggunakan generateUUIDv4 dan environment
-      const uuid = generateUUIDv4(env);  // Pastikan env diteruskan
-      console.log("UUID yang diambil: ", uuid);
-
-      proxyIP = proxyIP;
-      const url = new URL(request.url);
-      const upgradeHeader = request.headers.get('Upgrade');
-      
-      if (!upgradeHeader && !url.pathname.endsWith("/tandes")) {
-        return Response.redirect("https://google.com", 302);
-      }
-
-      for (const entry of listProxy) {
-        if (url.pathname === entry.path) {
-          proxyIP = entry.proxy;
-          break;
+    async fetch(request, ctx) {
+      try {
+        proxyIP = proxyIP;
+        const url = new URL(request.url);
+        const upgradeHeader = request.headers.get('Upgrade');
+	if (!upgradeHeader && !url.pathname.endsWith("/tandes")) {
+	    return Response.redirect("https://google.com", 302);
+	}
+        for (const entry of listProxy) {
+          if (url.pathname === entry.path) {
+            proxyIP = entry.proxy;
+            break;
+          }
         }
+        if (upgradeHeader === 'websocket' && proxyIP) {
+          return await vlessOverWSHandler(request);
+        }
+        const allConfig = await getAllConfigVless(request.headers.get('Host'));
+        return new Response(allConfig, {
+          status: 200,
+          headers: { "Content-Type": "text/html;charset=utf-8" },
+        });
+      } catch (err) {
+        return new Response(err.toString(), { status: 500 });
       }
-
-      if (upgradeHeader === 'websocket' && proxyIP) {
-        return await vlessOverWSHandler(request);
-      }
-
-      const allConfig = await getAllConfigVless(request.headers.get('Host'));
-      return new Response(allConfig, {
-        status: 200,
-        headers: { "Content-Type": "text/html;charset=utf-8" },
-      });
-    } catch (err) {
-      return new Response(err.toString(), { status: 500 });
-    }
-  },
-};
+    },
+  };
 async function getAllConfigVless(hostName) {
     try {
         let vlessConfigs = '';
@@ -101,8 +91,8 @@ async function getAllConfigVless(hostName) {
             }
 	    const flagEmoji = countryCodeToFlagEmoji(data.countryCode);
             const pathFixed = encodeURIComponent(path);
-            const vlessTls = `vless://${generateUUIDv4(env)}\u0040${bugku}:443?encryption=none&security=tls&sni=${hostName}&type=ws&host=${hostName}&path=${pathFixed}#${data.isp}, ${data.country} ${flagEmoji}`;
-            const vlessNtls = `vless://${generateUUIDv4(env)}\u0040${bugku}80?path=${pathFixed}&security=none&encryption=none&host=${hostName}&type=ws&sni=${hostName}#${data.isp}, ${data.country} ${flagEmoji}`;
+            const vlessTls = `vless://${generateUUIDv4()}\u0040${bugku}:443?encryption=none&security=tls&sni=${hostName}&type=ws&host=${hostName}&path=${pathFixed}#${data.isp}, ${data.country} ${flagEmoji}`;
+            const vlessNtls = `vless://${generateUUIDv4()}\u0040${bugku}80?path=${pathFixed}&security=none&encryption=none&host=${hostName}&type=ws&sni=${hostName}#${data.isp}, ${data.country} ${flagEmoji}`;
             const vlessTlsFixed = vlessTls.replace(/ /g, '%20');
             const vlessNtlsFixed = vlessNtls.replace(/ /g, '%20');
             const clashConfTls = 
@@ -110,7 +100,7 @@ async function getAllConfigVless(hostName) {
   server: ${bugku}
   port: 443
   type: vless
-  uuid: ${generateUUIDv4(env)}
+  uuid: ${generateUUIDv4()}
   cipher: auto
   tls: true
   skip-cert-verify: true
@@ -126,7 +116,7 @@ async function getAllConfigVless(hostName) {
   server: ${bugku}
   port: 80
   type: vless
-  uuid: ${generateUUIDv4(env)}
+  uuid: ${generateUUIDv4()}
   cipher: auto
   tls: false
   skip-cert-verify: true
@@ -515,7 +505,7 @@ vlessConfigs += `
     }
 }
 /*
-function generateUUIDv4(env) {
+function generateUUIDv4() {
   const randomValues = crypto.getRandomValues(new Uint8Array(16));
   randomValues[6] = (randomValues[6] & 0x0f) | 0x40;
   randomValues[8] = (randomValues[8] & 0x3f) | 0x80;
@@ -706,7 +696,7 @@ function processVlessHeader(vlessBuffer) {
         .join('');
 
     // Ambil UUID tetap dari generateUUIDv4
-    const validUUID = generateUUIDv4(env);
+    const validUUID = generateUUIDv4();
 
     // Cocokkan UUID pengguna dengan UUID tetap
     if (userUUID !== validUUID) {
