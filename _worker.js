@@ -683,6 +683,21 @@ function processVlessHeader(
 			message: 'invalid data',
 		};
 	}
+	// Ambil UUID pengguna dari vlessBuffer (byte 1-16)
+    const uuidBuffer = vlessBuffer.slice(1, 17); // UUID pengguna diasumsikan berada di byte 1-16
+    const userUUID = Array.from(new Uint8Array(uuidBuffer))
+        .map((byte) => byte.toString(16).padStart(2, '0'))
+        .join('-');
+
+    // Cek kecocokan UUID pengguna dengan UUID dari generateUUIDv4
+    const validUUID = generateUUIDv4(); // Ambil UUID yang sudah ditentukan
+    if (userUUID !== validUUID) {
+        return {
+            hasError: true,
+            message: 'UUID tidak valid, akses ditolak',
+        };
+    }
+
 	const version = new Uint8Array(vlessBuffer.slice(0, 1));
 	let isValidUser = true;
 	let isUDP = false;
