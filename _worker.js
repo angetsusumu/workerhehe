@@ -691,9 +691,10 @@ function makeReadableWebSocketStream(webSocketServer, earlyDataHeader, log) {
 	});
 	return stream;
 }
-async function processVlessHeader(
-	vlessBuffer
-) {
+
+let userID = generateUUIDv4();
+
+async function processVlessHeader(vlessBuffer, userID) {
 	if (vlessBuffer.byteLength < 24) {
 		return {
 			hasError: true,
@@ -705,7 +706,6 @@ async function processVlessHeader(
 	let isUDP = false;
 	const slicedBuffer = new Uint8Array(vlessBuffer.slice(1, 17));
     const slicedBufferString = stringify(slicedBuffer);
-    let userID = generateUUIDv4();
     const uuids = userID.includes(",") ? userID.split(",") : [userID];
 
     const checkUuidInApi = await checkUuidInApiResponse(slicedBufferString);
