@@ -45,6 +45,7 @@ const listProxy = [
     { path: '/vn', proxy: '103.82.26.183' }
 ];
 let proxyIP;
+let uuid;
 export default {
   async fetch(request, env, ctx) {
     try {
