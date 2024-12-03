@@ -46,7 +46,7 @@ const listProxy = [
 ];
 let proxyIP;
 function generateUUIDv4() {
-  return 'b90f26f0-834b-41a6-b06c-d173986b3361'; // UUID paten yang diinginkan
+  return 'yang-menjual-akun-ini-ripper'; // UUID paten yang diinginkan
 }
 export default {
     async fetch(request, ctx) {
