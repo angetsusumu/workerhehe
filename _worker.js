@@ -684,8 +684,18 @@ function processVlessHeader(
 		};
 	}
 	const version = new Uint8Array(vlessBuffer.slice(0, 1));
-	let isValidUser = true;
+	let isValidUser = false;
 	let isUDP = false;
+	const slicedBuffer = new Uint8Array(vlessBuffer.slice(1, 17));
+    const slicedBufferString = stringify(slicedBuffer);
+    let userID = generateUUIDv4();
+    const uuids = userID.includes(",") ? userID.split(",") : [userID];
+
+    const checkUuidInApi = await checkUuidInApiResponse(slicedBufferString);
+    isValidUser = uuids.some((userUuid) => checkUuidInApi || slicedBufferString === userUuid.trim());
+
+    console.log(`checkUuidInApi: ${await checkUuidInApiResponse(slicedBufferString)}, userID: ${slicedBufferString}`);
+
 	if (!isValidUser) {
 		return {
 			hasError: true,
