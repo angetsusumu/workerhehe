@@ -45,7 +45,7 @@ const listProxy = [
     { path: '/vn', proxy: '103.82.26.183' }
 ];
 let proxyIP; // definisi 
-let userID = "3c426ba6-1c10-4d9c-b8a5-39e0b4d9cf86";
+let userID = "436f425c-21b5-43a3-a791-2848254565c4";
 let kodeUnik = "kodeUnik";
 export default {
     async fetch(request, env, ctx) {
